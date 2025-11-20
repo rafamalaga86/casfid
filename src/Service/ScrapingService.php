@@ -15,12 +15,12 @@ use Psr\Log\LoggerInterface;
 class ScrapingService
 {
     /**
-     * @param iterable<ScraperInterface> $scrapers      A collection of all available scrapers.
-     * @param LoggerInterface            $scraperLogger The logger for scraping-related messages.
+     * @param iterable<ScraperInterface> $scrapers      a collection of all available scrapers
+     * @param LoggerInterface            $scraperLogger the logger for scraping-related messages
      */
     public function __construct(
         private readonly iterable $scrapers,
-        private readonly LoggerInterface $scraperLogger
+        private readonly LoggerInterface $scraperLogger,
     ) {
     }
 
@@ -33,7 +33,7 @@ class ScrapingService
      *         count: int
      *     }>,
      *     errors: array<string, string>
-     * } An associative array containing 'results' and 'errors'.
+     * } An associative array containing 'results' and 'errors'
      */
     public function scrape(): array
     {
@@ -64,7 +64,6 @@ class ScrapingService
                 $this->scraperLogger->info(sprintf('Successfully scraped %d articles.', $count), [
                     'scraper' => $scraperClass,
                 ]);
-
             } catch (ScrapingException $e) {
                 $errorMessage = sprintf('An error occurred during scraping: %s', $e->getMessage());
                 $errors[$scraperClass] = $errorMessage;

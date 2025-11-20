@@ -25,7 +25,7 @@ class ScrapeCommand extends Command
         /**
          * The service responsible for running the scrapers.
          */
-        private readonly ScrapingService $scrapingService
+        private readonly ScrapingService $scrapingService,
     ) {
         parent::__construct();
     }
@@ -44,6 +44,7 @@ class ScrapeCommand extends Command
 
         if (empty($results) && empty($errors)) {
             $io->warning('No scrapers were executed or found.');
+
             return Command::SUCCESS;
         }
 

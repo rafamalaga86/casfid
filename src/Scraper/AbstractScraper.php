@@ -35,8 +35,9 @@ abstract class AbstractScraper implements ScraperInterface
     /**
      * Scrapes the newspaper using the URL and selector provided by the concrete class.
      *
-     * @return NewsArticleDTO[] The list of scraped articles.
-     * @throws ScrapingException If the scraping process fails.
+     * @return NewsArticleDTO[] the list of scraped articles
+     *
+     * @throws ScrapingException if the scraping process fails
      */
     public function scrape(): array
     {
@@ -73,7 +74,7 @@ abstract class AbstractScraper implements ScraperInterface
 
             // Ensure the URL is absolute
             if (!str_starts_with($url, 'http')) {
-                $url = $baseUrl . $url;
+                $url = $baseUrl.$url;
             }
 
             try {
@@ -90,7 +91,6 @@ abstract class AbstractScraper implements ScraperInterface
                     url: $url,
                     body: trim(implode("\n\n", $body))
                 );
-
             } catch (TransportExceptionInterface $e) {
                 $this->scraperLogger->warning(sprintf('Failed to fetch article content from %s: %s', $url, $e->getMessage()), [
                     'url' => $url,
@@ -118,6 +118,7 @@ abstract class AbstractScraper implements ScraperInterface
     private function getBaseUrl(): string
     {
         $urlParts = parse_url($this->getScrapeUrl());
+
         return sprintf('%s://%s', $urlParts['scheme'], $urlParts['host']);
     }
 

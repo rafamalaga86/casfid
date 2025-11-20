@@ -67,5 +67,8 @@
             "allow-contrib": false,
             "require": "7.3.*"
         }
+    },
+    "require-dev": {
+        "php-cs-fixer/shim": "^3.90"
     }
 }

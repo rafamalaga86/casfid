@@ -24,42 +24,27 @@ class ElPaisScraper extends AbstractScraper
      */
     private const IDENTIFIER = 'elpais';
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getIdentifier(): string
     {
         return self::IDENTIFIER;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getScrapeUrl(): string
     {
         return self::SCRAPE_URL;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getArticleLinkSelector(): string
     {
         return self::ARTICLE_LINK_SELECTOR;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getArticleTitleSelector(): string
     {
         // This is a guess, might need adjustment.
         return 'h1';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getArticleBodySelector(): string
     {
         // This is a guess, might need adjustment.

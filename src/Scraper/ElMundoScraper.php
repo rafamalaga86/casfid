@@ -22,42 +22,27 @@ class ElMundoScraper extends AbstractScraper
      */
     private const IDENTIFIER = 'elmundo';
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getIdentifier(): string
     {
         return self::IDENTIFIER;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getScrapeUrl(): string
     {
         return self::SCRAPE_URL;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getArticleLinkSelector(): string
     {
         return self::ARTICLE_LINK_SELECTOR;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getArticleTitleSelector(): string
     {
         // This is a guess, might need adjustment.
         return 'h1.ue-c-article__headline';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getArticleBodySelector(): string
     {
         // This is a guess, might need adjustment.

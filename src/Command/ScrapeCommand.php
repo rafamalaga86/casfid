@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\DTO\HeadlineDTO;
 use App\Service\ScrapingService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -51,7 +52,7 @@ class ScrapeCommand extends Command
             $io->comment(sprintf('Found %d headlines:', $result['count']));
 
             $tableRows = array_map(
-                fn(array $headline, int $index) => [$index + 1, $headline['title'], $headline['url']],
+                fn(HeadlineDTO $headline, int $index) => [$index + 1, $headline->title, $headline->url],
                 $result['headlines'],
                 array_keys($result['headlines'])
             );

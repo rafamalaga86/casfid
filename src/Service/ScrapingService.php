@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\DTO\HeadlineDTO;
 use App\Scraper\Exception\ScrapingException;
 use App\Scraper\ScraperInterface;
 use Psr\Log\LoggerInterface;
@@ -28,7 +29,7 @@ class ScrapingService
      *
      * @return array{
      *     results: array<string, array{
-     *         headlines: array<int, array{title: string, url: string}>,
+     *         headlines: HeadlineDTO[],
      *         count: int
      *     }>,
      *     errors: array<string, string>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Scraper;
 
+use App\DTO\HeadlineDTO;
 use App\Scraper\Exception\ScrapingException;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -29,7 +30,7 @@ abstract class AbstractScraper implements ScraperInterface
     /**
      * Scrapes the newspaper using the URL and selector provided by the concrete class.
      *
-     * @return array<int, array{title: string, url: string}> The list of scraped headlines.
+     * @return HeadlineDTO[] The list of scraped headlines.
      * @throws ScrapingException If the scraping process fails.
      */
     public function scrape(): array
@@ -74,10 +75,7 @@ abstract class AbstractScraper implements ScraperInterface
                     $url = $baseUrl . $url;
                 }
 
-                $headlines[] = [
-                    'title' => $title,
-                    'url' => $url,
-                ];
+                $headlines[] = new HeadlineDTO(title: $title, url: $url);
             });
 
         return $headlines;

@@ -15,14 +15,22 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 abstract class AbstractScraper implements ScraperInterface
 {
     public function __construct(
+        /**
+         * The HTTP client to make requests.
+         */
         protected readonly HttpClientInterface $httpClient,
+        /**
+         * The maximum number of articles to scrape.
+         */
         protected readonly int $articleLimit
     ) {
     }
 
     /**
      * Scrapes the newspaper using the URL and selector provided by the concrete class.
-     * @throws ScrapingException
+     *
+     * @return array<int, array{title: string, url: string}> The list of scraped headlines.
+     * @throws ScrapingException If the scraping process fails.
      */
     public function scrape(): array
     {

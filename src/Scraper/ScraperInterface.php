@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Scraper;
 
-use App\DTO\HeadlineDTO;
+use App\DTO\NewsArticleDTO;
 
 /**
  * Defines the contract for all newspaper scrapers.
@@ -12,9 +12,9 @@ use App\DTO\HeadlineDTO;
 interface ScraperInterface
 {
     /**
-     * Scrapes the main headlines from the newspaper's front page.
+     * Scrapes news articles from the newspaper's front page.
      *
-     * @return HeadlineDTO[]
+     * @return NewsArticleDTO[]
      */
     public function scrape(): array;
 

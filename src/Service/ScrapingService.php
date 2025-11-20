@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\DTO\HeadlineDTO;
+use App\DTO\NewsArticleDTO;
 use App\Scraper\Exception\ScrapingException;
 use App\Scraper\ScraperInterface;
 use Psr\Log\LoggerInterface;
@@ -29,7 +29,7 @@ class ScrapingService
      *
      * @return array{
      *     results: array<string, array{
-     *         headlines: HeadlineDTO[],
+     *         articles: NewsArticleDTO[],
      *         count: int
      *     }>,
      *     errors: array<string, string>
@@ -44,24 +44,24 @@ class ScrapingService
             $scraperClass = get_class($scraper);
 
             try {
-                $headlines = $scraper->scrape();
+                $articles = $scraper->scrape();
 
-                if (empty($headlines)) {
-                    $this->scraperLogger->warning('No headlines found.', [
+                if (empty($articles)) {
+                    $this->scraperLogger->warning('No articles found.', [
                         'scraper' => $scraperClass,
                     ]);
                     // Store a warning, but not as a hard error
-                    $errors[$scraperClass] = 'No headlines were found. The website structure might have changed or the selector is wrong.';
+                    $errors[$scraperClass] = 'No articles were found. The website structure might have changed or the selector is wrong.';
                     continue;
                 }
 
-                $count = count($headlines);
+                $count = count($articles);
                 $results[$scraperClass] = [
-                    'headlines' => $headlines,
+                    'articles' => $articles,
                     'count' => $count,
                 ];
 
-                $this->scraperLogger->info(sprintf('Successfully scraped %d headlines.', $count), [
+                $this->scraperLogger->info(sprintf('Successfully scraped %d articles.', $count), [
                     'scraper' => $scraperClass,
                 ]);
 

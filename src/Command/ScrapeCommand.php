@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\DTO\HeadlineDTO;
+use App\DTO\NewsArticleDTO;
 use App\Service\ScrapingService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -17,7 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 #[AsCommand(
     name: 'app:scrape-news',
-    description: 'Runs all registered scrapers to fetch news headlines.'
+    description: 'Runs all registered scrapers to fetch full news articles (title, URL, and body).'
 )]
 class ScrapeCommand extends Command
 {
@@ -49,18 +49,17 @@ class ScrapeCommand extends Command
 
         foreach ($results as $scraperClass => $result) {
             $io->section(sprintf('Success: <info>%s</info>', $scraperClass));
-            $io->comment(sprintf('Found %d headlines:', $result['count']));
+            $io->comment(sprintf('Found %d articles:', $result['count']));
 
-            $tableRows = array_map(
-                fn(HeadlineDTO $headline, int $index) => [$index + 1, $headline->title, $headline->url],
-                $result['headlines'],
-                array_keys($result['headlines'])
-            );
-
-            $io->table(
-                ['#', 'Title', 'URL'],
-                $tableRows
-            );
+            /** @var NewsArticleDTO $article */
+            foreach ($result['articles'] as $index => $article) {
+                $io->writeln(sprintf('  <info>#%d: %s</info>', $index + 1, $article->title));
+                $io->writeln(sprintf('  <fg=gray>URL:</> %s', $article->url));
+                $io->writeln('  <fg=gray>Body:</>');
+                // Using a block to nicely format the body text with indentation.
+                $io->block($article->body);
+                $io->newLine();
+            }
         }
 
         if (!empty($errors)) {

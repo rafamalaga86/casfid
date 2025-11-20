@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Scraper;
 
 /**
- * Scrapes headlines from El Pais newspaper.
+ * Scrapes articles from El Pais newspaper.
  */
 class ElPaisScraper extends AbstractScraper
 {
@@ -15,9 +15,9 @@ class ElPaisScraper extends AbstractScraper
     private const SCRAPE_URL = 'https://elpais.com';
 
     /**
-     * The CSS selector for the headlines.
+     * The CSS selector for the article links on the front page.
      */
-    private const HEADLINE_SELECTOR = 'article h2 a';
+    private const ARTICLE_LINK_SELECTOR = 'article h2 a';
 
     /**
      * The unique identifier for the scraper.
@@ -43,8 +43,26 @@ class ElPaisScraper extends AbstractScraper
     /**
      * {@inheritdoc}
      */
-    protected function getHeadlineSelector(): string
+    protected function getArticleLinkSelector(): string
     {
-        return self::HEADLINE_SELECTOR;
+        return self::ARTICLE_LINK_SELECTOR;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getArticleTitleSelector(): string
+    {
+        // This is a guess, might need adjustment.
+        return 'h1';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getArticleBodySelector(): string
+    {
+        // This is a guess, might need adjustment.
+        return 'div.a_c p';
     }
 }

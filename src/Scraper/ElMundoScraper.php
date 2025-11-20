@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Scraper;
 
 /**
- * Scrapes headlines from El Mundo newspaper.
+ * Scrapes articles from El Mundo newspaper.
  */
 class ElMundoScraper extends AbstractScraper
 {
@@ -14,9 +14,9 @@ class ElMundoScraper extends AbstractScraper
      */
     private const SCRAPE_URL = 'https://www.elmundo.es/';
     /**
-     * The CSS selector for the headlines.
+     * The CSS selector for the article links on the front page.
      */
-    private const HEADLINE_SELECTOR = 'article:not(.ue-c-cover-content--xs-from-mobile) .ue-c-cover-content__headline';
+    private const ARTICLE_LINK_SELECTOR = 'article:not(.ue-c-cover-content--xs-from-mobile) .ue-c-cover-content__headline';
     /**
      * The unique identifier for the scraper.
      */
@@ -41,8 +41,26 @@ class ElMundoScraper extends AbstractScraper
     /**
      * {@inheritdoc}
      */
-    protected function getHeadlineSelector(): string
+    protected function getArticleLinkSelector(): string
     {
-        return self::HEADLINE_SELECTOR;
+        return self::ARTICLE_LINK_SELECTOR;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getArticleTitleSelector(): string
+    {
+        // This is a guess, might need adjustment.
+        return 'h1.ue-c-article__headline';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getArticleBodySelector(): string
+    {
+        // This is a guess, might need adjustment.
+        return '.ue-c-article__body p';
     }
 }

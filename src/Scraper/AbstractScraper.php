@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Scraper;
 
-use App\DTO\HeadlineDTO;
+use App\DTO\NewsArticleDTO;
 use App\Scraper\Exception\ScrapingException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -23,14 +24,18 @@ abstract class AbstractScraper implements ScraperInterface
         /**
          * The maximum number of articles to scrape.
          */
-        protected readonly int $articleLimit
+        protected readonly int $articleLimit,
+        /**
+         * The logger for scraping-related messages.
+         */
+        protected readonly LoggerInterface $scraperLogger,
     ) {
     }
 
     /**
      * Scrapes the newspaper using the URL and selector provided by the concrete class.
      *
-     * @return HeadlineDTO[] The list of scraped headlines.
+     * @return NewsArticleDTO[] The list of scraped articles.
      * @throws ScrapingException If the scraping process fails.
      */
     public function scrape(): array
@@ -39,46 +44,64 @@ abstract class AbstractScraper implements ScraperInterface
             $response = $this->httpClient->request('GET', $this->getScrapeUrl());
             $html = $response->getContent();
         } catch (TransportExceptionInterface $e) {
-            throw new ScrapingException(sprintf('Failed to fetch content from %s: %s', $this->getScrapeUrl(), $e->getMessage()), 0, $e);
+            throw new ScrapingException(sprintf('Failed to fetch front page from %s: %s', $this->getScrapeUrl(), $e->getMessage()), 0, $e);
         }
 
         $crawler = new Crawler($html);
-
-        $headlines = [];
         $baseUrl = $this->getBaseUrl();
 
-        $crawler
-            ->filter($this->getHeadlineSelector())
-            ->slice(0, $this->articleLimit)
-            ->each(function (Crawler $node) use (&$headlines, $baseUrl) {
-                $title = trim($node->text(''));
+        $articleLinkNodes = $crawler
+            ->filter($this->getArticleLinkSelector())
+            ->slice(0, $this->articleLimit);
 
-                // If the node is not a link, try to find a parent link
-                $linkNode = $node;
-                if ('a' !== $linkNode->nodeName()) {
-                    $linkNode = $node->closest('a');
-                }
+        $results = [];
 
-                // If no link found, we can't get a URL.
-                if (0 === $linkNode->count()) {
-                    return;
-                }
+        foreach ($articleLinkNodes as $node) {
+            $nodeCrawler = new Crawler($node);
 
-                $url = $linkNode->attr('href');
+            // If the node is not a link, try to find a parent link
+            $linkNode = $nodeCrawler;
+            if ('a' !== $linkNode->nodeName()) {
+                $linkNode = $nodeCrawler->closest('a');
+            }
 
-                if (empty($title) || empty($url)) {
-                    return;
-                }
+            if (0 === $linkNode->count() || empty($linkNode->attr('href'))) {
+                continue;
+            }
 
-                // Ensure the URL is absolute
-                if (!str_starts_with($url, 'http')) {
-                    $url = $baseUrl . $url;
-                }
+            $url = $linkNode->attr('href');
 
-                $headlines[] = new HeadlineDTO(title: $title, url: $url);
-            });
+            // Ensure the URL is absolute
+            if (!str_starts_with($url, 'http')) {
+                $url = $baseUrl . $url;
+            }
 
-        return $headlines;
+            try {
+                $articleResponse = $this->httpClient->request('GET', $url);
+                $articleHtml = $articleResponse->getContent();
+                $articleCrawler = new Crawler($articleHtml, $url);
+
+                $title = $articleCrawler->filter($this->getArticleTitleSelector())->text('');
+                $body = $articleCrawler->filter($this->getArticleBodySelector())
+                    ->each(fn (Crawler $p) => $p->text(''));
+
+                $results[] = new NewsArticleDTO(
+                    title: trim($title),
+                    url: $url,
+                    body: trim(implode("\n\n", $body))
+                );
+
+            } catch (TransportExceptionInterface $e) {
+                $this->scraperLogger->warning(sprintf('Failed to fetch article content from %s: %s', $url, $e->getMessage()), [
+                    'url' => $url,
+                    'scraper' => static::class,
+                    'exception' => $e,
+                ]);
+                continue;
+            }
+        }
+
+        return $results;
     }
 
     /**
@@ -109,7 +132,17 @@ abstract class AbstractScraper implements ScraperInterface
     abstract protected function getScrapeUrl(): string;
 
     /**
-     * The CSS selector to find the headline elements.
+     * The CSS selector to find the article link elements on the front page.
      */
-    abstract protected function getHeadlineSelector(): string;
+    abstract protected function getArticleLinkSelector(): string;
+
+    /**
+     * The CSS selector for the main title on an article page.
+     */
+    abstract protected function getArticleTitleSelector(): string;
+
+    /**
+     * The CSS selector for the paragraphs that make up the article's body.
+     */
+    abstract protected function getArticleBodySelector(): string;
 }

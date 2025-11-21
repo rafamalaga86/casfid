@@ -20,7 +20,7 @@ class ElMundoScraper extends AbstractScraper
      */
     private const ARTICLE_LINK_SELECTOR = 'article:not(.ue-c-cover-content--xs-from-mobile) .ue-c-cover-content__headline';
 
-    protected function getIdentifier(): ScraperIdentifierEnum
+    public function getIdentifier(): ScraperIdentifierEnum
     {
         return ScraperIdentifierEnum::ElMundo;
     }

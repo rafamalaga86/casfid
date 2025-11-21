@@ -21,7 +21,7 @@ class ElPaisScraper extends AbstractScraper
      */
     private const ARTICLE_LINK_SELECTOR = 'article h2 a';
 
-    protected function getIdentifier(): ScraperIdentifierEnum
+    public function getIdentifier(): ScraperIdentifierEnum
     {
         return ScraperIdentifierEnum::ElPais;
     }

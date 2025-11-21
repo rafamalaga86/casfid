@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\DTO\NewsArticleDTO;
+use App\Repository\ArticleRepositoryInterface;
 use App\Scraper\Exception\ScrapingException;
 use App\Scraper\ScraperInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -21,6 +23,8 @@ class ScrapingService
     public function __construct(
         private readonly iterable $scrapers,
         private readonly LoggerInterface $scraperLogger,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ArticleRepositoryInterface $articleRepository,
     ) {
     }
 
@@ -55,13 +59,15 @@ class ScrapingService
                     continue;
                 }
 
+                $this->saveArticles($articles, $scraper->getIdentifier());
+
                 $count = count($articles);
                 $results[$scraperClass] = [
                     'articles' => $articles,
                     'count' => $count,
                 ];
 
-                $this->scraperLogger->info(sprintf('Successfully scraped %d articles.', $count), [
+                $this->scraperLogger->info(sprintf('Successfully scraped and processed %d articles.', $count), [
                     'scraper' => $scraperClass,
                 ]);
             } catch (ScrapingException $e) {
@@ -78,5 +84,30 @@ class ScrapingService
             'results' => $results,
             'errors' => $errors,
         ];
+    }
+
+    /**
+     * @param NewsArticleDTO[] $articles
+     */
+    private function saveArticles(array $articles, \App\Scraper\Enum\ScraperIdentifierEnum $source): void
+    {
+        foreach ($articles as $articleDTO) {
+            // Avoid inserting duplicates based on the URL
+            $existingArticle = $this->articleRepository->findOneByUrl($articleDTO->url);
+            if ($existingArticle) {
+                continue;
+            }
+
+            $article = new \App\Entity\Article();
+            $article->setTitle($articleDTO->title);
+            $article->setUrl($articleDTO->url);
+            $article->setBody($articleDTO->body);
+            $article->setSource($source);
+            $article->setScrapedAt(new \DateTimeImmutable());
+
+            $this->entityManager->persist($article);
+        }
+
+        $this->entityManager->flush();
     }
 }

@@ -126,7 +126,7 @@ abstract class AbstractScraper implements ScraperInterface
     /**
      * A unique identifier for the newspaper.
      */
-    abstract protected function getIdentifier(): ScraperIdentifierEnum;
+    abstract public function getIdentifier(): ScraperIdentifierEnum;
 
     /**
      * The full URL of the page to be scraped.

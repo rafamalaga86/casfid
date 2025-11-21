@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Scraper;
 
 use App\DTO\NewsArticleDTO;
+use App\Scraper\Enum\ScraperIdentifierEnum;
 
 /**
  * Defines the contract for all newspaper scrapers.
@@ -17,6 +18,11 @@ interface ScraperInterface
      * @return NewsArticleDTO[]
      */
     public function scrape(): array;
+
+    /**
+     * A unique identifier for the scraper.
+     */
+    public function getIdentifier(): ScraperIdentifierEnum;
 
     /**
      * Indicates if this scraper applies to a specific source (e.g., by URL).

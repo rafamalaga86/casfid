@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Scraper;
 
 use App\DTO\NewsArticleDTO;
+use App\Scraper\Enum\ScraperIdentifierEnum;
 use App\Scraper\Exception\ScrapingException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
@@ -109,7 +110,7 @@ abstract class AbstractScraper implements ScraperInterface
      */
     public function supports(string $source): bool
     {
-        return str_contains(strtolower($source), strtolower($this->getIdentifier()));
+        return str_contains(strtolower($source), $this->getIdentifier()->value);
     }
 
     /**
@@ -123,9 +124,9 @@ abstract class AbstractScraper implements ScraperInterface
     }
 
     /**
-     * A unique lowercase identifier for the newspaper (e.g., 'elpais').
+     * A unique identifier for the newspaper.
      */
-    abstract protected function getIdentifier(): string;
+    abstract protected function getIdentifier(): ScraperIdentifierEnum;
 
     /**
      * The full URL of the page to be scraped.

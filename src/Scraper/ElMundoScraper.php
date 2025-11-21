@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Scraper;
 
+use App\Scraper\Enum\ScraperIdentifierEnum;
+
 /**
  * Scrapes articles from El Mundo newspaper.
  */
@@ -17,14 +19,10 @@ class ElMundoScraper extends AbstractScraper
      * The CSS selector for the article links on the front page.
      */
     private const ARTICLE_LINK_SELECTOR = 'article:not(.ue-c-cover-content--xs-from-mobile) .ue-c-cover-content__headline';
-    /**
-     * The unique identifier for the scraper.
-     */
-    private const IDENTIFIER = 'elmundo';
 
-    protected function getIdentifier(): string
+    protected function getIdentifier(): ScraperIdentifierEnum
     {
-        return self::IDENTIFIER;
+        return ScraperIdentifierEnum::ElMundo;
     }
 
     protected function getScrapeUrl(): string

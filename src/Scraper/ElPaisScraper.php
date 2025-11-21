@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Scraper;
 
+use App\Scraper\Enum\ScraperIdentifierEnum;
+
 /**
  * Scrapes articles from El Pais newspaper.
  */
@@ -19,14 +21,9 @@ class ElPaisScraper extends AbstractScraper
      */
     private const ARTICLE_LINK_SELECTOR = 'article h2 a';
 
-    /**
-     * The unique identifier for the scraper.
-     */
-    private const IDENTIFIER = 'elpais';
-
-    protected function getIdentifier(): string
+    protected function getIdentifier(): ScraperIdentifierEnum
     {
-        return self::IDENTIFIER;
+        return ScraperIdentifierEnum::ElPais;
     }
 
     protected function getScrapeUrl(): string

@@ -12,23 +12,25 @@ interface ArticleServiceInterface
     /**
      * Retrieves all articles.
      *
-     * @return ArticleOutputDTO[] An array of ArticleOutputDTO objects.
+     * @return ArticleOutputDTO[] an array of ArticleOutputDTO objects
      */
     public function findAll(): array;
 
     /**
      * Finds a single article by its ID.
      *
-     * @param int $id The ID of the article to find.
-     * @return ArticleOutputDTO|null The ArticleOutputDTO object if found, null otherwise.
+     * @param int $id the ID of the article to find
+     *
+     * @return ArticleOutputDTO|null the ArticleOutputDTO object if found, null otherwise
      */
     public function find(int $id): ?ArticleOutputDTO;
 
     /**
      * Creates a new article from the provided data.
      *
-     * @param ArticleInputDTO $articleDto The data transfer object containing the article's data.
-     * @return ArticleOutputDTO The created ArticleOutputDTO object.
+     * @param ArticleInputDTO $articleDto the data transfer object containing the article's data
+     *
+     * @return ArticleOutputDTO the created ArticleOutputDTO object
      */
     public function create(ArticleInputDTO $articleDto): ArticleOutputDTO;
 }

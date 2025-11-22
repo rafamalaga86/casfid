@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\ArticleRepository;
 use App\Scraper\Enum\ScraperIdentifierEnum;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -36,7 +35,7 @@ class Article
     /**
      * Get the ID of the article.
      *
-     * @return int|null The ID of the article.
+     * @return int|null the ID of the article
      */
     public function getId(): ?int
     {
@@ -46,7 +45,7 @@ class Article
     /**
      * Get the title of the article.
      *
-     * @return string|null The title of the article.
+     * @return string|null the title of the article
      */
     public function getTitle(): ?string
     {
@@ -56,8 +55,7 @@ class Article
     /**
      * Set the title of the article.
      *
-     * @param string $title The title to set.
-     * @return static
+     * @param string $title the title to set
      */
     public function setTitle(string $title): static
     {
@@ -69,7 +67,7 @@ class Article
     /**
      * Get the URL of the article.
      *
-     * @return string|null The URL of the article.
+     * @return string|null the URL of the article
      */
     public function getUrl(): ?string
     {
@@ -79,8 +77,7 @@ class Article
     /**
      * Set the URL of the article.
      *
-     * @param string $url The URL to set.
-     * @return static
+     * @param string $url the URL to set
      */
     public function setUrl(string $url): static
     {
@@ -92,7 +89,7 @@ class Article
     /**
      * Get the body content of the article.
      *
-     * @return string|null The body content of the article.
+     * @return string|null the body content of the article
      */
     public function getBody(): ?string
     {
@@ -102,8 +99,7 @@ class Article
     /**
      * Set the body content of the article.
      *
-     * @param string $body The body content to set.
-     * @return static
+     * @param string $body the body content to set
      */
     public function setBody(string $body): static
     {
@@ -115,7 +111,7 @@ class Article
     /**
      * Get the source identifier of the article.
      *
-     * @return ScraperIdentifierEnum|null The source identifier.
+     * @return ScraperIdentifierEnum|null the source identifier
      */
     public function getSource(): ?ScraperIdentifierEnum
     {
@@ -125,8 +121,7 @@ class Article
     /**
      * Set the source identifier of the article.
      *
-     * @param ScraperIdentifierEnum $source The source identifier to set.
-     * @return static
+     * @param ScraperIdentifierEnum $source the source identifier to set
      */
     public function setSource(ScraperIdentifierEnum $source): static
     {
@@ -138,7 +133,7 @@ class Article
     /**
      * Get the scraping date and time of the article.
      *
-     * @return \DateTimeImmutable|null The scraping date and time.
+     * @return \DateTimeImmutable|null the scraping date and time
      */
     public function getScrapedAt(): ?\DateTimeImmutable
     {
@@ -148,8 +143,7 @@ class Article
     /**
      * Set the scraping date and time of the article.
      *
-     * @param \DateTimeImmutable $scrapedAt The scraping date and time to set.
-     * @return static
+     * @param \DateTimeImmutable $scrapedAt the scraping date and time to set
      */
     public function setScrapedAt(\DateTimeImmutable $scrapedAt): static
     {

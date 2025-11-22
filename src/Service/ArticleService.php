@@ -15,16 +15,13 @@ class ArticleService implements ArticleServiceInterface
     /**
      * ArticleService constructor.
      *
-     * @param ArticleRepositoryInterface $articleRepository The article repository.
+     * @param ArticleRepositoryInterface $articleRepository the article repository
      */
     public function __construct(
-        private readonly ArticleRepositoryInterface $articleRepository
+        private readonly ArticleRepositoryInterface $articleRepository,
     ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findAll(): array
     {
         $articles = $this->articleRepository->findAll();
@@ -32,9 +29,6 @@ class ArticleService implements ArticleServiceInterface
         return array_map(static fn ($article) => ArticleOutputDTO::fromEntity($article), $articles);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function find(int $id): ?ArticleOutputDTO
     {
         $article = $this->articleRepository->find($id);
@@ -42,9 +36,6 @@ class ArticleService implements ArticleServiceInterface
         return $article ? ArticleOutputDTO::fromEntity($article) : null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function create(ArticleInputDTO $articleDto): ArticleOutputDTO
     {
         $article = new Article();

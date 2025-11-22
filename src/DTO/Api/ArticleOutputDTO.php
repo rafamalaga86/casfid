@@ -22,12 +22,12 @@ class ArticleOutputDTO
     /**
      * ArticleOutputDTO constructor.
      *
-     * @param int $id The unique identifier of the article.
-     * @param string $title The title of the article.
-     * @param string $url The URL of the article.
-     * @param string $body The cleaned body content of the article.
-     * @param ScraperIdentifierEnum $source The source of the article.
-     * @param \DateTimeImmutable $scrapedAt The date and time when the article was scraped.
+     * @param int                   $id        the unique identifier of the article
+     * @param string                $title     the title of the article
+     * @param string                $url       the URL of the article
+     * @param string                $body      the cleaned body content of the article
+     * @param ScraperIdentifierEnum $source    the source of the article
+     * @param \DateTimeImmutable    $scrapedAt the date and time when the article was scraped
      */
     public function __construct(
         public readonly int $id,
@@ -35,15 +35,16 @@ class ArticleOutputDTO
         public readonly string $url,
         public readonly string $body,
         public readonly ScraperIdentifierEnum $source,
-        public readonly \DateTimeImmutable $scrapedAt
+        public readonly \DateTimeImmutable $scrapedAt,
     ) {
     }
 
     /**
      * Creates an ArticleOutputDTO from an Article entity.
      *
-     * @param Article $article The Article entity to convert.
-     * @return self A new instance of ArticleOutputDTO.
+     * @param Article $article the Article entity to convert
+     *
+     * @return self a new instance of ArticleOutputDTO
      */
     public static function fromEntity(Article $article): self
     {

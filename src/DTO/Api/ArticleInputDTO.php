@@ -13,7 +13,7 @@ class ArticleInputDTO
     public ?string $title = null;
 
     #[Assert\NotBlank]
-    #[Assert\Url]
+    #[Assert\Url(requireTld: true)]
     #[Assert\Length(max: 255)]
     public ?string $url = null;
 

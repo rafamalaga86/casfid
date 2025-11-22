@@ -18,17 +18,17 @@ class ArticleController extends AbstractController
     /**
      * ArticleController constructor.
      *
-     * @param ArticleServiceInterface $articleService The article service.
+     * @param ArticleServiceInterface $articleService the article service
      */
     public function __construct(
-        private readonly ArticleServiceInterface $articleService
+        private readonly ArticleServiceInterface $articleService,
     ) {
     }
 
     /**
      * Retrieves a list of all articles.
      *
-     * @return JsonResponse A JSON response containing a list of articles.
+     * @return JsonResponse a JSON response containing a list of articles
      */
     #[Route(methods: ['GET'], path: '', name: 'api_articles_list')]
     public function getAll(): JsonResponse
@@ -47,8 +47,9 @@ class ArticleController extends AbstractController
     /**
      * Retrieves a single article by its ID.
      *
-     * @param int $id The ID of the article to retrieve.
-     * @return JsonResponse A JSON response containing the article data or a 404 error if not found.
+     * @param int $id the ID of the article to retrieve
+     *
+     * @return JsonResponse a JSON response containing the article data or a 404 error if not found
      */
     #[Route('/{id}', methods: ['GET'], name: 'api_articles_get', requirements: ['id' => '\d+'])]
     public function get(int $id): JsonResponse
@@ -72,8 +73,9 @@ class ArticleController extends AbstractController
     /**
      * Creates a new article.
      *
-     * @param ArticleInputDTO $articleInputDTO The data transfer object containing the new article's data.
-     * @return JsonResponse A JSON response containing the newly created article's data.
+     * @param ArticleInputDTO $articleInputDTO the data transfer object containing the new article's data
+     *
+     * @return JsonResponse a JSON response containing the newly created article's data
      */
     #[Route(methods: ['POST'], path: '', name: 'api_articles_create')]
     public function create(#[MapRequestPayload] ArticleInputDTO $articleInputDTO): JsonResponse

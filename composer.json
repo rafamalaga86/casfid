@@ -73,6 +73,7 @@
         }
     },
     "require-dev": {
-        "php-cs-fixer/shim": "^3.90"
+        "php-cs-fixer/shim": "^3.90",
+        "phpunit/phpunit": "^12.4"
     }
 }

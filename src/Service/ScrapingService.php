@@ -45,40 +45,42 @@ class ScrapingService
         $errors = [];
 
         foreach ($this->scrapers as $scraper) {
-            $scraperClass = get_class($scraper);
+            $scraperIdentifier = $scraper->getIdentifier()->value;
 
             try {
                 $articles = $scraper->scrape();
 
                 if (empty($articles)) {
                     $this->scraperLogger->warning('No articles found.', [
-                        'scraper' => $scraperClass,
+                        'scraper' => $scraperIdentifier,
                     ]);
                     // Store a warning, but not as a hard error
-                    $errors[$scraperClass] = 'No articles were found. The website structure might have changed or the selector is wrong.';
+                    $errors[$scraperIdentifier] = 'No articles were found. The website structure might have changed or the selector is wrong.';
                     continue;
                 }
 
                 $this->saveArticles($articles, $scraper->getIdentifier());
 
                 $count = count($articles);
-                $results[$scraperClass] = [
+                $results[$scraperIdentifier] = [
                     'articles' => $articles,
                     'count' => $count,
                 ];
 
                 $this->scraperLogger->info(sprintf('Successfully scraped and processed %d articles.', $count), [
-                    'scraper' => $scraperClass,
+                    'scraper' => $scraperIdentifier,
                 ]);
             } catch (ScrapingException $e) {
                 $errorMessage = sprintf('An error occurred during scraping: %s', $e->getMessage());
-                $errors[$scraperClass] = $errorMessage;
+                $errors[$scraperIdentifier] = $errorMessage;
                 $this->scraperLogger->error('Scraping failed.', [
-                    'scraper' => $scraperClass,
+                    'scraper' => $scraperIdentifier,
                     'exception' => $e,
                 ]);
             }
         }
+
+        $this->entityManager->flush();
 
         return [
             'results' => $results,
@@ -107,7 +109,5 @@ class ScrapingService
 
             $this->entityManager->persist($article);
         }
-
-        $this->entityManager->flush();
     }
 }

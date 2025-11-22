@@ -1,0 +1,30 @@
+controllers:
+    resource:
+        path: ../../src/Controller/Api/
+        namespace: App\Controller\Api
+    type: attribute
+
+api_articles_list:
+    path: /api/articles
+    methods: [GET]
+    controller: App\Controller\Api\ArticleController::list
+
+api_articles_create:
+    path: /api/articles
+    methods: [POST]
+    controller: App\Controller\Api\ArticleController::create
+
+api_articles_get:
+    path: /api/articles/{id}
+    methods: [GET]
+    controller: App\Controller\Api\ArticleController::get
+
+api_articles_update:
+    path: /api/articles/{id}
+    methods: [PUT]
+    controller: App\Controller\Api\ArticleController::update
+
+api_articles_delete:
+    path: /api/articles/{id}
+    methods: [DELETE]
+    controller: App\Controller\Api\ArticleController::delete

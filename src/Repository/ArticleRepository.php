@@ -12,14 +12,10 @@ class ArticleRepository implements ArticleRepositoryInterface
 {
     private EntityRepository $repository;
 
-    /**
-     * ArticleRepository constructor.
-     *
-     * @param EntityManagerInterface $em The entity manager.
-     */
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->repository = $em->getRepository(Article::class);
+    public function __construct(
+        private readonly EntityManagerInterface $em
+    ) {
+        $this->repository = $this->em->getRepository(Article::class);
     }
 
     /**
@@ -44,5 +40,14 @@ class ArticleRepository implements ArticleRepositoryInterface
     public function findOneByUrl(string $url): ?Article
     {
         return $this->repository->findOneBy(['url' => $url]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function save(Article $article): void
+    {
+        $this->em->persist($article);
+        $this->em->flush();
     }
 }

@@ -38,4 +38,11 @@ interface ArticleRepositoryInterface
      * @return Article|null The Article entity if found, null otherwise.
      */
     public function findOneByUrl(string $url): ?Article;
+
+    /**
+     * Persists an article to the database.
+     *
+     * @param Article $article The article to save.
+     */
+    public function save(Article $article): void;
 }

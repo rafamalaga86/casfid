@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\DTO\Api\ArticleInputDTO;
 use App\Service\ArticleServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api/articles')]
@@ -60,6 +62,25 @@ class ArticleController extends AbstractController
         $data = $articleDto->toArray();
 
         $response = new JsonResponse($data);
+        $response->setEncodingOptions(
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
+
+        return $response;
+    }
+
+    /**
+     * Creates a new article.
+     *
+     * @param ArticleInputDTO $articleInputDTO The data transfer object containing the new article's data.
+     * @return JsonResponse A JSON response containing the newly created article's data.
+     */
+    #[Route(methods: ['POST'], path: '', name: 'api_articles_create')]
+    public function create(#[MapRequestPayload] ArticleInputDTO $articleInputDTO): JsonResponse
+    {
+        $articleDto = $this->articleService->create($articleInputDTO);
+
+        $response = new JsonResponse($articleDto->toArray(), Response::HTTP_CREATED);
         $response->setEncodingOptions(
             JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
         );

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\DTO\Api\ArticleInputDTO;
 use App\DTO\Api\ArticleOutputDTO;
 
 interface ArticleServiceInterface
@@ -22,4 +23,12 @@ interface ArticleServiceInterface
      * @return ArticleOutputDTO|null The ArticleOutputDTO object if found, null otherwise.
      */
     public function find(int $id): ?ArticleOutputDTO;
+
+    /**
+     * Creates a new article from the provided data.
+     *
+     * @param ArticleInputDTO $articleDto The data transfer object containing the article's data.
+     * @return ArticleOutputDTO The created ArticleOutputDTO object.
+     */
+    public function create(ArticleInputDTO $articleDto): ArticleOutputDTO;
 }

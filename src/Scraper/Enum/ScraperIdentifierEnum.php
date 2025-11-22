@@ -14,4 +14,5 @@ enum ScraperIdentifierEnum: string
 {
     case ElMundo = 'elmundo';
     case ElPais = 'elpais';
+    case Api = 'api';
 }

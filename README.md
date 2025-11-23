@@ -1,102 +1,48 @@
-# CASFID – Reto Técnico Backend (DailyTrends)
+# El test
 
-¡Bienvenido/a al reto técnico de CASFID!
+Me llevó demasiado tiempo reaprender la magia (validación, el manejo de errores con ExceptionSubscriber y demás magia) de Symfony, porque no trabajo con él desde hace años. Creo que hubiera sido mas representativo de mi conocimiento el manejo de los status codes y los errores de forma manual en el controlador, pero en el ejercicio se pedía un uso adecuado de Symfony.
 
-Este reto evalúa tus habilidades técnicas en Symfony, diseño limpio, scraping y trabajo con MongoDB/MySQL.  
-El proyecto se llama **DailyTrends** y actúa como un agregador de noticias de portada.
+Yo conozco PHP a fondo y Laravel, pero Symfony no tanto, por aclarar eso. También me hubiera gustado hacer mas tests unitarios y funcionales, pero esta semana he tenido bastante trabajo y no he tenido tiempo para más. Tampoco me dio tiempo a hacer la documentacion de la API con Swagger, pero si me dejais un poco mas de tiempo con gusto la haré. También me hubiera gustado configurar algun tiempo de espera para reintentos en el scrapper, por ejemplo, por si fallara, para aumentar su resiliencia.
 
----
+## Los diagramas
 
-## Objetivo general
+Son los archivos c4\_\*.puml.
 
-El objetivo es desarrollar una API en Symfony 7+ que recoja y gestione noticias de portada de _El País_ y _El Mundo_ mediante **scraping**, y permita gestionarlas (lectura, creación manual, edición y borrado) vía API REST.
+![Diagrama](diagram.png)
 
-**Duración estimada total**: 5 días  
-Según indicación del reclutador, realizarás únicamente la Parte 1 (1 día), las Partes 1 y 2 (3 días), o el reto completo (5 días).
+## Cómo ejecutar el scrapper
 
----
+1.  **Guardará las noticias en la base de datos MYSQL. El DATABASE_URL tiene que estar propiamente configurado y luego correr las migraciones**:
 
-## Partes del reto
+    ```bash
+    php bin/console doctrine:schema:update
+    ```
 
-### Parte 1 – Web Scraping y almacenamiento: 1 día
+2.  **Se corre con el siguiente comando**:
+    ```bash
+    php bin/console app:scrape-news
+    ```
 
-- Obtener las 5 noticias principales de hoy de El País y El Mundo (sin usar RSS).
-- Guardarlas automáticamente en MongoDB/MySQL (con o sin ODM/ORM).
-- Implementar arquitectura limpia (controladores, servicios, repositorios, documentos).
-- Polimorfismo obligatorio: cada periódico tendrá su propio scraper.
-- Manejo de errores robusto.
+## Configuración de la base de datos para pruebas
 
-### Parte 2 – API REST CRUD: +2 días (total: 3 días)
+Los tests funcionales requieren una base de datos de pruebas dedicada con el esquema correcto.
 
-Implementar los endpoints para gestionar noticias (`Feed`):
+1.  **Cree la base de datos de pruebas**:
 
-- `GET /feeds`
-- `GET /feeds/{id}`
-- `POST /feeds`
-- `PUT /feeds/{id}`
-- `DELETE /feeds/{id}`
+    ```bash
+    php bin/console doctrine:database:create --env=test
+    ```
 
-Requisitos:
+2.  **Actualice el esquema de la base de datos de pruebas**:
 
-- Validación de datos
-- Separación de responsabilidades
-- Buenas prácticas (SOLID, inyección de dependencias, DTOs…)
+    ```bash
+    php bin/console doctrine:schema:update --force --env=test
+    ```
 
-### Parte 3 – Tests, Documentación y Arquitectura: +2 días (total: 5 días)
+## Ejecución de los tests
 
-- Pruebas unitarias (scrapers, repositorios…)
-- Pruebas funcionales (endpoints)
-- Documentación Swagger/OpenAPI
-- Diagrama simple de arquitectura
-- `README.md` con instrucciones, arquitectura y tests
+Una vez que el entorno y la base de datos estén configurados, puede ejecutar los tests usando PHPUnit:
 
----
-
-## Entorno Docker incluido
-
-El proyecto ya incluye una configuración **Docker lista para usar**, con PHP 8.4, Nginx, Symfony CLI y Node.js.
-
-Además, tienes la opción de elegir entre **MySQL** y **MongoDB** que ya están configurados en Docker:
-
-- **MySQL**: Accesible a través de PHPMyAdmin en el puerto 8889
-    - Usuario phpMyAdmin: `root`
-    - Contraseña: `password`
-- **MongoDB**: Accesible a través de Mongo Express en el puerto 8081
-  - Usuario de Mongo Express: `admin`
-  - Contraseña: `pass`
-
-Solo debes definir las variables de entorno `UID` y `UNAME` según tu propia configuración local.
-De esta forma compartirás los mismos permisos al utilizar Symfony CLI dentro del contenedor de Docker.
-
-
-## Criterios de Evaluación
-
-- **Limpieza y claridad del código**
-- **Modularidad y mantenimiento a largo plazo**
-- **Uso adecuado de Symfony y sus componentes**
-- **Calidad y resiliencia del scraping**
-- **Diseño orientado a objetos y uso de patrones**
-- **Desacoplamiento de componentes**
-- **Cobertura de tests y calidad de la documentación**
-
----
-
-## Recomendación técnica
-
-Presta especial atención al control de errores, al desacoplamiento y con la vista siempre puesta en el rendimiento y escalabilidad.
-
----
-
-## Entrega
-
-- Sube el proyecto a un **repositorio público** (GitHub, GitLab, etc.).
-- Realiza **commits descriptivos y frecuentes**, documentando cada avance.
-- Comparte el enlace con el equipo técnico de **CASFID**.
-
----
-
-¡Buena suerte!
-
-Esperamos que disfrutes el reto y lo uses como una oportunidad para mostrar tu manera de trabajar, tu estilo de código y tu pensamiento técnico.
-
-¡Gracias por tu interés en **CASFID**!
+```bash
+vendor/bin/phpunit
+```

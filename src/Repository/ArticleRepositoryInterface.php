@@ -46,4 +46,12 @@ interface ArticleRepositoryInterface
      * @param Article $article the article to save
      */
     public function save(Article $article): void;
+
+    /**
+     * Removes an article from the database.
+     *
+     * @param Article $article the article to remove
+     * @param bool    $flush   whether to immediately flush the changes to the database
+     */
+    public function remove(Article $article, bool $flush = true): void;
 }

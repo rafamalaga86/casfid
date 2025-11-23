@@ -140,4 +140,168 @@ class ArticleControllerTest extends WebTestCase
         $this->assertEquals($articleData['url'], $createdArticle->getUrl());
         $this->assertEquals($articleData['body'], $createdArticle->getBody());
     }
+
+    public function testUpdateArticleSuccessfully(): void
+    {
+        $client = static::createClient();
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $this->clearDatabase($entityManager);
+
+        // 1. Create an article to update
+        $originalArticle = $this->createArticle($entityManager, 'Original Title', 'https://example.com/original', 'Original Body');
+
+        $updatedArticleData = [
+            'title' => 'Updated Title',
+            'url' => 'https://example.com/updated',
+            'body' => 'Updated Body Content',
+        ];
+
+        // 2. Send PUT request to update the article
+        $client->request(
+            'PUT',
+            '/api/articles/'.$originalArticle->getId(),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($updatedArticleData)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+
+        // 3. Assert that the response contains the updated data
+        $this->assertIsArray($responseData);
+        $this->assertEquals($originalArticle->getId(), $responseData['id']);
+        $this->assertEquals($updatedArticleData['title'], $responseData['title']);
+        $this->assertEquals($updatedArticleData['url'], $responseData['url']);
+        $this->assertEquals($updatedArticleData['body'], $responseData['body']);
+
+        // 4. Verify that the article is actually updated in the database
+        $client->request('GET', '/api/articles/'.$originalArticle->getId());
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+
+        $fetchedData = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertIsArray($fetchedData);
+        $this->assertEquals($originalArticle->getId(), $fetchedData['id']);
+        $this->assertEquals($updatedArticleData['title'], $fetchedData['title']);
+        $this->assertEquals($updatedArticleData['url'], $fetchedData['url']);
+        $this->assertEquals($updatedArticleData['body'], $fetchedData['body']);
+    }
+
+    public function testUpdateNonExistentArticle(): void
+    {
+        $client = static::createClient();
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $this->clearDatabase($entityManager);
+
+        $nonExistentId = 99999; // An ID that surely doesn't exist
+
+        $updatedArticleData = [
+            'title' => 'Updated Title for NonExistent',
+            'url' => 'https://example.com/nonexistent-updated',
+            'body' => 'Updated Body Content for NonExistent',
+        ];
+
+        $client->request(
+            'PUT',
+            '/api/articles/'.$nonExistentId,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($updatedArticleData)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertEquals(['message' => 'Article not found'], $responseData);
+    }
+
+    public function testUpdateArticleWithInvalidData(): void
+    {
+        $client = static::createClient();
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $this->clearDatabase($entityManager);
+
+        // Create an article to attempt to update
+        $originalArticle = $this->createArticle($entityManager, 'Valid Title', 'https://example.com/valid', 'Valid Body');
+
+        $invalidArticleData = [
+            'title' => '', // Blank title
+            'url' => 'invalid-url', // Invalid URL format
+            'body' => '', // Blank body
+        ];
+
+        $client->request(
+            'PUT',
+            '/api/articles/'.$originalArticle->getId(),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($invalidArticleData)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertArrayHasKey('message', $responseData);
+        $this->assertIsString($responseData['message']); // Assert that a message string exists
+        $this->assertArrayHasKey('errors', $responseData);
+        $this->assertCount(3, $responseData['errors']);
+
+        // Check for specific violation messages based on property paths
+        $this->assertArrayHasKey('title', $responseData['errors']);
+        $this->assertNotEmpty($responseData['errors']['title']);
+        $this->assertArrayHasKey('url', $responseData['errors']);
+        $this->assertNotEmpty($responseData['errors']['url']);
+        $this->assertArrayHasKey('body', $responseData['errors']);
+        $this->assertNotEmpty($responseData['errors']['body']);
+    }
+
+    public function testDeleteArticleSuccessfully(): void
+    {
+        $client = static::createClient();
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $this->clearDatabase($entityManager);
+
+        // Create an article to delete
+        $articleToDelete = $this->createArticle($entityManager, 'Article to Delete', 'https://example.com/todelete', 'Content to be deleted');
+        $articleId = $articleToDelete->getId();
+
+        $client->request('DELETE', '/api/articles/'.$articleId);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
+
+        // Verify that the article is no longer in the database
+        $articleRepository = $entityManager->getRepository(Article::class);
+        $deletedArticle = $articleRepository->find($articleId);
+
+        $this->assertNull($deletedArticle);
+    }
+
+    public function testDeleteNonExistentArticle(): void
+    {
+        $client = static::createClient();
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $this->clearDatabase($entityManager);
+
+        $nonExistentId = 99999; // An ID that surely doesn't exist
+
+        $client->request('DELETE', '/api/articles/'.$nonExistentId);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $this->assertEquals(['message' => 'Article not found'], $responseData);
+    }
 }

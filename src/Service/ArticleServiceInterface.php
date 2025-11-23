@@ -43,4 +43,13 @@ interface ArticleServiceInterface
      * @return ArticleOutputDTO|null the updated ArticleOutputDTO object if found and updated, null otherwise
      */
     public function update(int $id, ArticleInputDTO $articleDto): ?ArticleOutputDTO;
+
+    /**
+     * Deletes an article by its ID.
+     *
+     * @param int $id the ID of the article to delete
+     *
+     * @return bool true if the article was deleted, false otherwise
+     */
+    public function delete(int $id): bool;
 }

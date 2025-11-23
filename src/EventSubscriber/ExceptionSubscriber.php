@@ -37,13 +37,29 @@ class ExceptionSubscriber implements EventSubscriberInterface
         }
 
         // If it's a validation error, override the message and extract details
-        if (($exception instanceof BadRequestHttpException && $exception->getPrevious() instanceof ValidationException) || $exception instanceof ValidationException) {
+        if (($exception instanceof BadRequestHttpException && $exception->getPrevious() instanceof \Symfony\Component\Validator\Exception\ValidationException) || $exception instanceof \Symfony\Component\Validator\Exception\ValidationException || $exception->getPrevious() instanceof \Symfony\Component\Validator\Exception\ValidationFailedException) {
             $statusCode = Response::HTTP_UNPROCESSABLE_ENTITY; // 422
             $message = 'Validation failed.'; // Explicitly set generic message
-            $validationException = ($exception instanceof BadRequestHttpException) ? $exception->getPrevious() : $exception;
 
-            foreach ($validationException->getViolations() as $violation) {
-                $errors[$violation->getPropertyPath()] = $violation->getMessage();
+            $validationException = null;
+            if ($exception instanceof BadRequestHttpException) {
+                $validationException = $exception->getPrevious();
+            } elseif ($exception instanceof \Symfony\Component\Validator\Exception\ValidationException) {
+                $validationException = $exception;
+            } elseif ($exception->getPrevious() instanceof \Symfony\Component\Validator\Exception\ValidationFailedException) {
+                $validationException = $exception->getPrevious();
+            }
+
+            if ($validationException instanceof \Symfony\Component\Validator\Exception\ValidationFailedException) {
+                foreach ($validationException->getViolations() as $violation) {
+                    $errors[$violation->getPropertyPath()] = $violation->getMessage();
+                }
+            } elseif ($validationException instanceof \Symfony\Component\Validator\Exception\ValidationException) {
+                // Fallback for generic ValidationException if it doesn't implement ValidationFailedException
+                // This might not be strictly necessary if ValidationFailedException is always used by MapRequestPayload
+                foreach ($validationException->getViolations() as $violation) {
+                    $errors[$violation->getPropertyPath()] = $violation->getMessage();
+                }
             }
         }
         // ... handle other generic exceptions if needed

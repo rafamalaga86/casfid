@@ -96,6 +96,25 @@ class ArticleController extends AbstractController
     }
 
     /**
+     * Deletes an article by its ID.
+     *
+     * @param int $id the ID of the article to delete
+     *
+     * @return JsonResponse a JSON response with no content (204) on success, or a 404 error if not found
+     */
+    #[Route('/{id}', methods: ['DELETE'], name: 'api_articles_delete', requirements: ['id' => '\d+'])]
+    public function delete(int $id): JsonResponse
+    {
+        $deleted = $this->articleService->delete($id);
+
+        if (!$deleted) {
+            return $this->createApiResponse(['message' => 'Article not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->createApiResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
      * Creates a JSON response with standard encoding options.
      *
      * @param mixed $data    the response data

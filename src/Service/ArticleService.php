@@ -66,4 +66,24 @@ class ArticleService implements ArticleServiceInterface
 
         return ArticleOutputDTO::fromEntity($article);
     }
+
+    /**
+     * Deletes an article by its ID.
+     *
+     * @param int $id the ID of the article to delete
+     *
+     * @return bool true if the article was deleted, false otherwise
+     */
+    public function delete(int $id): bool
+    {
+        $article = $this->articleRepository->find($id);
+
+        if (!$article) {
+            return false;
+        }
+
+        $this->articleRepository->remove($article);
+
+        return true;
+    }
 }

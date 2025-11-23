@@ -38,4 +38,18 @@ class ArticleRepository implements ArticleRepositoryInterface
         $this->em->persist($article);
         $this->em->flush();
     }
+
+    /**
+     * Removes an article from the database.
+     *
+     * @param Article $article the article to remove
+     * @param bool    $flush   whether to immediately flush the changes to the database
+     */
+    public function remove(Article $article, bool $flush = true): void
+    {
+        $this->em->remove($article);
+        if ($flush) {
+            $this->em->flush();
+        }
+    }
 }

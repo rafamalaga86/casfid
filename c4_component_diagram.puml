@@ -1,0 +1,45 @@
+@startuml C4_Component
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Component Diagram for Web/API Application (Casfid News Scraper)
+
+Container(web_app, "Web/API Application", "PHP (Symfony)", "Provides REST API for articles; houses scraping logic.") {
+
+    Component(article_controller, "ArticleController", "Symfony Controller", "Handles HTTP requests for article API.")
+    Component(scraping_command, "ScrapeCommand", "Symfony Console Command", "Triggers the scraping process.")
+
+    Component(article_service, "ArticleService", "PHP Service", "Manages business logic for articles (CRUD operations).")
+    Component(scraping_service, "ScrapingService", "PHP Service", "Orchestrates scraping from multiple sources.")
+
+    Component(article_repository, "ArticleRepository", "Doctrine Repository", "Provides data access for Article entities.")
+    Component(scraper_interface, "ScraperInterface", "PHP Interface", "Contract for all news scrapers.")
+    Component(abstract_scraper, "AbstractScraper", "PHP Abstract Class", "Base implementation for scrapers (HTTP client, DOM parsing).")
+    Component(el_mundo_scraper, "ElMundoScraper", "PHP Class", "Scrapes articles from El Mundo.")
+    Component(el_pais_scraper, "ElPaisScraper", "PHP Class", "Scrapes articles from El País.")
+    
+    Component(news_article_dto, "NewsArticleDTO", "PHP DTO", "Data Transfer Object for scraped article data.")
+    Component(article_input_dto, "ArticleInputDTO", "PHP DTO", "Data Transfer Object for API input.")
+    Component(article_output_dto, "ArticleOutputDTO", "PHP DTO", "Data Transfer Object for API output.")
+
+    Component(article_entity, "Article", "Doctrine Entity", "Represents a news article in the database.")
+
+    Rel(article_controller, article_service, "Uses")
+    Rel(article_service, article_repository, "Uses")
+    Rel(scraping_command, scraping_service, "Uses")
+    Rel(scraping_service, scraper_interface, "Uses (polymorphic)")
+    Rel(abstract_scraper, scraper_interface, "Implements")
+    Rel(el_mundo_scraper, abstract_scraper, "Extends")
+    Rel(el_pais_scraper, abstract_scraper, "Extends")
+    Rel(scraping_service, news_article_dto, "Creates/Manages")
+    Rel(article_service, article_entity, "Manages")
+    Rel(article_repository, article_entity, "Persists/Retrieves")
+
+    Rel(article_controller, article_input_dto, "Receives")
+    Rel(article_controller, article_output_dto, "Returns")
+    Rel(article_service, article_input_dto, "Receives")
+    Rel(article_service, article_output_dto, "Returns")
+    Rel(article_service, news_article_dto, "Converts from/to")
+    Rel(scraping_service, news_article_dto, "Produces")
+}
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml C4_Container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Container Diagram for Casfid News Scraper API
+
+Person(admin, "Administrator", "Manages and runs the scraping process.")
+Person(api_client, "API Client", "External system or user consuming news articles via API.")
+
+System_Boundary(c1, "Casfid News Scraper API") {
+    Container(web_app, "Web/API Application", "PHP (Symfony)", "Provides REST API for articles; houses scraping logic.")
+    Container(cli_scraper, "CLI Scraper", "PHP (Symfony Console)", "Executes scraping commands periodically or on demand.")
+    ContainerDb(mysql_db, "MySQL Database", "MySQL", "Stores scraped news articles and application data.")
+
+    Rel(web_app, mysql_db, "Reads from and Writes to", "JDBC/ODBC")
+    Rel(cli_scraper, web_app, "Triggers scraping process within", "Internal API/Service Call")
+    Rel(cli_scraper, mysql_db, "Writes scraped data to", "JDBC/ODBC")
+}
+
+System_Ext(el_mundo, "El Mundo Website", "Source of news articles.")
+System_Ext(el_pais, "El País Website", "Source of news articles.")
+
+Rel(admin, cli_scraper, "Runs scraping commands on")
+Rel(api_client, web_app, "Consumes articles from", "HTTPS")
+Rel(web_app, el_mundo, "Scrapes articles from", "HTTPS")
+Rel(web_app, el_pais, "Scrapes articles from", "HTTPS")
+
+@enduml

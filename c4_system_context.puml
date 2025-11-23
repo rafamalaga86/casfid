@@ -1,0 +1,21 @@
+@startuml C4_Context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title System Context Diagram for Casfid News Scraper
+
+Person(admin, "Administrator", "Manages and runs the scraping process.")
+Person(api_client, "API Client", "External system or user consuming news articles via API.")
+
+System(news_scraper_api, "Casfid News Scraper API", "Provides API for news articles and orchestrates scraping.")
+
+System_Ext(el_mundo, "El Mundo Website", "Source of news articles.")
+System_Ext(el_pais, "El País Website", "Source of news articles.")
+System_Ext(external_database, "Article Database", "Stores scraped news articles (MySQL).")
+
+Rel(admin, news_scraper_api, "Runs scraping command on")
+Rel(api_client, news_scraper_api, "Consumes articles from", "HTTPS")
+Rel(news_scraper_api, el_mundo, "Scrapes articles from", "HTTPS")
+Rel(news_scraper_api, el_pais, "Scrapes articles from", "HTTPS")
+Rel(news_scraper_api, external_database, "Stores and retrieves articles from", "JDBC/ODBC")
+
+@enduml

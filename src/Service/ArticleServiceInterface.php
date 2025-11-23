@@ -33,4 +33,14 @@ interface ArticleServiceInterface
      * @return ArticleOutputDTO the created ArticleOutputDTO object
      */
     public function create(ArticleInputDTO $articleDto): ArticleOutputDTO;
+
+    /**
+     * Updates an existing article from the provided data.
+     *
+     * @param int             $id         the ID of the article to update
+     * @param ArticleInputDTO $articleDto the data transfer object containing the article's updated data
+     *
+     * @return ArticleOutputDTO|null the updated ArticleOutputDTO object if found and updated, null otherwise
+     */
+    public function update(int $id, ArticleInputDTO $articleDto): ?ArticleOutputDTO;
 }

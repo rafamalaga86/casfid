@@ -36,12 +36,7 @@ class ArticleController extends AbstractController
         $articles = $this->articleService->findAll();
         $data = array_map(fn ($article) => $article->toArray(), $articles);
 
-        $response = new JsonResponse($data);
-        $response->setEncodingOptions(
-            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-        );
-
-        return $response;
+        return $this->createApiResponse($data);
     }
 
     /**
@@ -57,17 +52,12 @@ class ArticleController extends AbstractController
         $articleDto = $this->articleService->find($id);
 
         if (!$articleDto) {
-            return new JsonResponse(['message' => 'Article not found'], Response::HTTP_NOT_FOUND);
+            return $this->createApiResponse(['message' => 'Article not found'], Response::HTTP_NOT_FOUND);
         }
 
         $data = $articleDto->toArray();
 
-        $response = new JsonResponse($data);
-        $response->setEncodingOptions(
-            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-        );
-
-        return $response;
+        return $this->createApiResponse($data);
     }
 
     /**
@@ -82,7 +72,39 @@ class ArticleController extends AbstractController
     {
         $articleDto = $this->articleService->create($articleInputDTO);
 
-        $response = new JsonResponse($articleDto->toArray(), Response::HTTP_CREATED);
+        return $this->createApiResponse($articleDto->toArray(), Response::HTTP_CREATED);
+    }
+
+    /**
+     * Updates an existing article.
+     *
+     * @param int             $id              the ID of the article to update
+     * @param ArticleInputDTO $articleInputDTO the data transfer object containing the updated article's data
+     *
+     * @return JsonResponse a JSON response containing the updated article's data or a 404 error if not found
+     */
+    #[Route('/{id}', methods: ['PUT'], name: 'api_articles_update', requirements: ['id' => '\d+'])]
+    public function update(int $id, #[MapRequestPayload] ArticleInputDTO $articleInputDTO): JsonResponse
+    {
+        $articleDto = $this->articleService->update($id, $articleInputDTO);
+
+        if (!$articleDto) {
+            return $this->createApiResponse(['message' => 'Article not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->createApiResponse($articleDto->toArray(), Response::HTTP_OK);
+    }
+
+    /**
+     * Creates a JSON response with standard encoding options.
+     *
+     * @param mixed $data    the response data
+     * @param int   $status  the HTTP status code
+     * @param array $headers an array of HTTP headers
+     */
+    private function createApiResponse(mixed $data, int $status = Response::HTTP_OK, array $headers = []): JsonResponse
+    {
+        $response = new JsonResponse($data, $status, $headers);
         $response->setEncodingOptions(
             JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
         );

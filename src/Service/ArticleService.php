@@ -49,4 +49,21 @@ class ArticleService implements ArticleServiceInterface
 
         return ArticleOutputDTO::fromEntity($article);
     }
+
+    public function update(int $id, ArticleInputDTO $articleDto): ?ArticleOutputDTO
+    {
+        $article = $this->articleRepository->find($id);
+
+        if (!$article) {
+            return null;
+        }
+
+        $article->setTitle($articleDto->title);
+        $article->setUrl($articleDto->url);
+        $article->setBody($articleDto->body);
+
+        $this->articleRepository->save($article);
+
+        return ArticleOutputDTO::fromEntity($article);
+    }
 }
